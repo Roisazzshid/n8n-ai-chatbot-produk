@@ -1,0 +1,159 @@
+{
+  "name": "AI Chatbot Produk Google Sheets",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        0,
+        0
+      ],
+      "id": "8a7a0cb1-517f-46cb-8cf2-a68691e76709",
+      "name": "When chat message received",
+      "webhookId": "0a79dc64-4f2c-4906-a3a8-99de4fe3cebf"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Anda adalah AI Agent untuk Chatbot Informasi Produk.\n\nTugas utama Anda adalah membantu pengguna mendapatkan informasi produk berdasarkan data yang tersedia di Google Sheets.\n\nGunakan Google Sheets Tool untuk mencari dan mengambil data produk sebelum memberikan jawaban yang berkaitan dengan produk.\n\nInformasi yang dapat diberikan meliputi:\n\n1. Nama produk.\n2. Kategori produk.\n3. Harga produk.\n4. Stok produk.\n5. Deskripsi produk.\n\nAturan:\n\n* Selalu gunakan Google Sheets Tool untuk mencari informasi produk.\n* Jangan mengarang nama produk, harga, stok, kategori, atau deskripsi yang tidak terdapat di Google Sheets.\n* Jika produk ditemukan, berikan informasi berdasarkan data yang tersedia.\n* Jika produk tidak ditemukan, katakan bahwa produk tersebut tidak tersedia dalam data.\n* Gunakan bahasa Indonesia yang sederhana, ramah, dan mudah dipahami.\n* Untuk pertanyaan harga, tampilkan harga dalam format Rupiah.\n* Jika pengguna menanyakan beberapa produk, tampilkan informasi setiap produk dengan jelas.\n* Jika pengguna menanyakan daftar produk berdasarkan kategori, gunakan data dari Google Sheets.\n* Jika pertanyaan tidak berhubungan dengan data produk, jelaskan bahwa chatbot ini berfokus pada informasi produk."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        224,
+        0
+      ],
+      "id": "b1037142-ec51-443a-a8c1-ebd3033d955e",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.1,
+      "position": [
+        96,
+        208
+      ],
+      "id": "e1b10891-a856-487b-bfd3-56fad53f6564",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "6IVLNqliw1gdMCI1",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        240,
+        208
+      ],
+      "id": "ae013f4f-ab0d-49d0-83ae-e154d40b1e9f",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1afVl0qve2c3cRgYPPrHX8EDvnHTtKGcGm5BbI2Oe-GM",
+          "mode": "list",
+          "cachedResultName": "Data Produk Chatbot AI",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1afVl0qve2c3cRgYPPrHX8EDvnHTtKGcGm5BbI2Oe-GM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1afVl0qve2c3cRgYPPrHX8EDvnHTtKGcGm5BbI2Oe-GM/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [
+        384,
+        208
+      ],
+      "id": "9c2931d5-563b-4769-a2db-d4b52a2fb8a7",
+      "name": "Get row(s) in sheet in Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fE8PqmBQ6Fgi2cfO",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get row(s) in sheet in Google Sheets": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "cf5dbe59-4843-4a37-9640-6a4a8e2938b4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "dc96f10ae7dc95d3c138575ba243a0a167923dbcb524841d451aadf9135d5fb3"
+  },
+  "nodeGroups": [],
+  "id": "RzXMX81BCEfZxVNS",
+  "tags": []
+}
